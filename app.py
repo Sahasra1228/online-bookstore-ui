@@ -51,7 +51,7 @@ def admin_login():
 
         if username == "admin" and password == "admin123":
             session['user'] = username
-            session['message'] = "Logged in successfully!"
+            flash("Logged in successfully!")
             return redirect(url_for('dashboard'))
         else:
             flash("Invalid credentials")
@@ -65,6 +65,7 @@ def admin_login():
 @app.route('/logout')
 def logout():
     session.clear()
+    flash("Logged out successfully!")
     return redirect(url_for('admin_login'))
 
 

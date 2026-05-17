@@ -280,6 +280,86 @@ def debug_db():
         "DB_PASSWORD": "SET" if os.environ.get("DB_PASSWORD") else "NOT SET"
     }
 
+@app.route('/analytics')
+def analytics():
+
+    if not check_login():
+        return redirect(url_for('admin_login'))
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT COALESCE(SUM(total_amount),0) FROM orders")
+    revenue = float(cur.fetchone()[0] or 0)
+
+    cur.execute("SELECT COUNT(*) FROM books")
+    total_books = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM customers")
+    total_customers = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM orders")
+    total_orders = cur.fetchone()[0]
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "analytics.html",
+        revenue=revenue,
+        total_books=total_books,
+        total_customers=total_customers,
+        total_orders=total_orders
+    )
+
+@app.route('/add_order', methods=['POST'])
+def add_order():
+
+    data = request.get_json()
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT customer_id FROM customers WHERE name=%s",
+        (data['customer_name'],)
+    )
+    customer = cur.fetchone()
+
+    cur.execute(
+        "SELECT book_id, price FROM books WHERE title=%s",
+        (data['book_name'],)
+    )
+    book = cur.fetchone()
+
+    if not customer or not book:
+        return jsonify({"status": "error"})
+
+    customer_id = customer[0]
+    book_id = book[0]
+    price = float(book[1])
+
+    quantity = int(data['quantity'])
+    total_amount = quantity * price
+
+    cur.execute("""
+        INSERT INTO orders
+        (customer_id, book_id, order_date, quantity, total_amount)
+        VALUES (%s, %s, NOW(), %s, %s)
+    """, (
+        customer_id,
+        book_id,
+        quantity,
+        total_amount
+    ))
+
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return jsonify({"status": "success"})
+
 # -----------------------------
 # RUN
 # -----------------------------

@@ -342,62 +342,92 @@ def analytics():
     if not check_login():
         return redirect(url_for('admin_login'))
 
+    selected_year = request.args.get("year")
+
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Summary stats
+    # Get available years for filter dropdown
     cur.execute("""
-        SELECT 
+        SELECT DISTINCT EXTRACT(YEAR FROM order_date)::int
+        FROM orders
+        ORDER BY 1
+    """)
+    years = [row[0] for row in cur.fetchall()]
+
+    # Filter condition
+    where_clause = ""
+    params = []
+
+    if selected_year:
+        where_clause = """
+            WHERE EXTRACT(YEAR FROM order_date) = %s
+        """
+        params.append(selected_year)
+
+    # Dashboard cards
+    cur.execute(f"""
+        SELECT
             COUNT(*),
             COALESCE(SUM(total_amount),0),
             COALESCE(AVG(total_amount),0)
         FROM orders
-    """)
+        {where_clause}
+    """, params)
+
     stats = cur.fetchone()
 
     # Monthly sales
-    cur.execute("""
-        SELECT 
-            TO_CHAR(order_date, 'Mon') as month,
-            SUM(total_amount)
+    cur.execute(f"""
+        SELECT
+            TO_CHAR(order_date, 'Mon') AS month,
+            SUM(total_amount) AS sales
         FROM orders
-        GROUP BY month
-        ORDER BY MIN(order_date)
-    """)
-    monthly_sales = [
-        {"month": row[0], "sales": float(row[1])}
-        for row in cur.fetchall()
-    ]
+        {where_clause}
+        GROUP BY month, EXTRACT(MONTH FROM order_date)
+        ORDER BY EXTRACT(MONTH FROM order_date)
+    """, params)
+
+    monthly_sales = []
+
+    for row in cur.fetchall():
+        monthly_sales.append({
+            "month": row[0],
+            "sales": float(row[1])
+        })
 
     # Top books
     cur.execute("""
-        SELECT b.title, COUNT(*)
+        SELECT b.title, SUM(o.quantity) AS total
         FROM orders o
         JOIN books b ON o.book_id = b.book_id
         GROUP BY b.title
-        ORDER BY COUNT(*) DESC
+        ORDER BY total DESC
         LIMIT 5
     """)
+
     top_books = cur.fetchall()
 
     # Top customers
     cur.execute("""
-        SELECT c.name, COUNT(*)
+        SELECT c.name, SUM(o.total_amount) AS spent
         FROM orders o
         JOIN customers c ON o.customer_id = c.customer_id
         GROUP BY c.name
-        ORDER BY COUNT(*) DESC
+        ORDER BY spent DESC
         LIMIT 5
     """)
+
     top_customers = cur.fetchall()
 
     # Genre distribution
     cur.execute("""
-        SELECT b.genre, COUNT(*)
+        SELECT b.genre, COUNT(*) AS total
         FROM orders o
         JOIN books b ON o.book_id = b.book_id
         GROUP BY b.genre
     """)
+
     genre_data = cur.fetchall()
 
     cur.close()
@@ -409,7 +439,9 @@ def analytics():
         monthly_sales=monthly_sales,
         top_books=top_books,
         top_customers=top_customers,
-        genre_data=genre_data
+        genre_data=genre_data,
+        years=years,
+        selected_year=selected_year
     )
 
 @app.route('/add_order', methods=['POST'])

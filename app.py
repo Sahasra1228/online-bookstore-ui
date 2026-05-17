@@ -171,6 +171,62 @@ def add_book():
 
     return jsonify({"message": "success"})
 
+# -----------------------------
+# EDIT BOOK
+# -----------------------------
+@app.route('/edit_book/<int:book_id>', methods=['PUT'])
+def edit_book(book_id):
+
+    data = request.get_json()
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE books
+        SET title=%s,
+            author=%s,
+            genre=%s,
+            published_year=%s,
+            price=%s,
+            stock=%s
+        WHERE book_id=%s
+    """, (
+        data['title'],
+        data['author'],
+        data['genre'],
+        data['published_year'],
+        data['price'],
+        data['stock'],
+        book_id
+    ))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"status": "success"})
+
+
+# -----------------------------
+# DELETE BOOK
+# -----------------------------
+@app.route('/delete_book/<int:book_id>', methods=['DELETE'])
+def delete_book(book_id):
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "DELETE FROM books WHERE book_id=%s",
+        (book_id,)
+    )
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return jsonify({"status": "success"})
 
 # -----------------------------
 # CUSTOMERS

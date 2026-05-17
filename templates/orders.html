@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Orders Page</title>
+
+  <style>
+
+    body {
+      display: flex;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #0d1b2a;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar h2 {
+      color: #4ea8de;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+    }
+
+    .sidebar a:hover {
+      background: #1b263b;
+    }
+
+    /* MAIN */
+    .container {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    select, input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .add-btn {
+      padding: 10px 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .add-btn:hover {
+      background: #218838;
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    /* POPUP */
+    #orderForm {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 40%;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px gray;
+      width: 260px;
+      z-index: 999;
+    }
+
+    #orderForm input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+    }
+
+    #orderForm button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <h2>📚 BOOKNEST</h2>
+
+    <a href="/dashboard">Home</a>
+    <a href="/books">Books</a>
+    <a href="/customers">Customers</a>
+    <a href="/orders">Orders</a>
+    <a href="/analytics">Analytics</a>
+
+  </div>
+
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+
+    <h1>📦 Orders Management</h1>
+
+    <!-- SEARCH + ADD -->
+    <div class="top-bar">
+
+        <div style="display:flex; gap:10px;">
+            <select id="searchColumn">
+            <option value="0">Order ID</option>
+            <option value="1">Customer ID</option>
+            <option value="2">Book ID</option>
+            <option value="3">Order Date</option>
+            <option value="4">Quantity</option>
+            <option value="5">Total Amount</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="Search...">
+        </div>
+
+        <button class="add-btn" onclick="openOrderForm()">
+            + Add Order
+        </button>
+
+    </div>
+
+    <!-- TABLE -->
+    <table>
+
+      <thead>
+        <tr>
+          <th>Order_ID</th>
+          <th>Customer_ID</th>
+          <th>Book_ID</th>
+          <th>Order_Date</th>
+          <th>Quantity</th>
+          <th>Total_Amount</th>
+        </tr>
+      </thead>
+
+      <tbody id="orderTable">
+
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.order_id }}</td>
+          <td>{{ order.customer_id }}</td>
+          <td>{{ order.book_id }}</td>
+          <td>{{ order.order_date }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.total_amount }}</td>
+        </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+
+    <div id="orderForm"
+        style="display:none; position:fixed; top:20%; left:40%;
+                background:white; padding:20px; border-radius:10px;
+                box-shadow:0 0 10px gray; width:260px;">
+
+        <h3>Add Order</h3>
+
+        <input id="customer_name" placeholder="Customer Name"><br><br>
+        <input id="book_name" placeholder="Book Name"><br><br>
+        <input id="quantity" placeholder="Quantity"><br><br>
+
+        <button onclick="addOrder()">Save</button>
+        <button onclick="closeOrderForm()">Close</button>
+
+    </div>
+
+  <!-- JAVASCRIPT -->
+  <script>
+
+    // SEARCH 
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+
+            let value = this.value.toLowerCase().trim();
+            let column = document.getElementById("searchColumn").value;
+            let rows = document.querySelectorAll("#orderTable tr");
+
+            rows.forEach(function (row) {
+
+            let cells = row.querySelectorAll("td");
+            if (!cells.length) return;
+
+            let cellText = cells[column].textContent.toLowerCase().trim();
+
+    // SHOW ALL IF EMPTY
+            if (value === "") {
+            row.style.display = "";
+            return;
+            }
+
+    //  EXACT MATCH FOR ID COLUMNS (Order ID, Customer ID, Book ID)
+            if (column === "0" || column === "1" || column === "2") {
+
+            if (cellText === value) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+
+            }
+
+    //  PARTIAL MATCH FOR OTHER COLUMNS
+            else {
+
+            if (cellText.includes(value)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+
+            }
+
+        });
+
+    });
+
+
+    // OPEN POPUP
+    function openOrderForm() {
+      document.getElementById("orderForm").style.display = "block";
+    }
+
+    // CLOSE POPUP
+    function closeOrderForm() {
+      document.getElementById("orderForm").style.display = "none";
+    }
+
+    // ADD ORDER
+    function addOrder() {
+
+        let data = {
+            customer_name: document.getElementById("customer_name").value,
+            book_name: document.getElementById("book_name").value,
+            quantity: document.getElementById("quantity").value
+        };
+
+        fetch("/add_order", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(result => {
+
+            console.log("SERVER RESPONSE:", result);
+
+            if (result.status === "success") {
+                alert("Order added successfully!");
+                location.reload();
+            } 
+            else {
+                alert(result.message || "Failed to add order");
+            }
+
+        })
+        .catch(err => {
+            console.error("ERROR:", err);
+            alert("Server error - check Flask terminal");
+        });
+
+    }
+
+  </script>
+
+</body>
+
+</html>

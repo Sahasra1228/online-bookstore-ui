@@ -1,0 +1,297 @@
+/* ================= GLOBAL ================= */
+body {
+  display: flex;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+}
+
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #0d1b2a;
+  color: white;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.sidebar h2 {
+  color: #4ea8de;
+  margin-bottom: 25px;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.nav-item {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.nav-item:hover {
+  background: #1b263b;
+  transform: translateX(5px);
+}
+
+
+/* ================= MAIN CONTENT ================= */
+.main-content {
+  margin-left: 240px;
+  padding: 40px;
+  width: calc(100% - 240px);
+  box-sizing: border-box;
+}
+
+
+/* ================= NAVBAR ================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+
+/* ================= WELCOME ================= */
+.welcome h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #0d1b2a;
+}
+
+.welcome p {
+  margin-top: 8px;
+  color: #666;
+}
+
+
+/* ================= DASHBOARD CARDS ================= */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  margin-top: 25px;
+}
+
+@media (max-width: 768px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 24px;
+  font-weight: bold;
+  color: #007bff;
+}
+
+
+/* ================= TABLE ================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  margin-top: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #007bff;
+  color: white;
+}
+
+tr:hover {
+  background: #f9f9f9;
+}
+
+
+/* ================= TOP BAR ================= */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+/* ================= SEARCH BOX ================= */
+.search-box input {
+  padding: 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+
+/* ================= BUTTONS ================= */
+.add-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #218838;
+}
+
+.edit-btn {
+  background: orange;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.action-cell {
+  white-space: nowrap;
+}
+
+
+/* ================= ADMIN DROPDOWN ================= */
+.admin-dropdown {
+  position: relative;
+}
+
+.admin-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 40px;
+
+  background: white;
+  min-width: 170px;
+
+  border-radius: 8px;
+  padding: 12px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+  z-index: 1000;
+}
+
+.dropdown-content p {
+  margin: 0;
+  color: #333;
+}
+
+.dropdown-content a {
+  display: block;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.dropdown-content.show {
+  display: block;
+}
+
+
+/* ================= LOGIN / LOGOUT POPUP ================= */
+.login-popup {
+  position: fixed;
+
+  top: 20px;
+  right: 20px;
+
+  background: #28a745;
+  color: white;
+
+  padding: 12px 20px;
+
+  border-radius: 8px;
+
+  font-weight: bold;
+
+  z-index: 9999;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+  animation: popupFade 0.3s ease;
+}
+
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+
+/* ================= LOGIN PAGE BRAND ================= */
+
+.page-logo {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    font-size: 54px;
+    font-weight: 900;
+    letter-spacing: 4px;
+
+    color: #007bff;
+
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Online Bookstore</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: Arial;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      background: #f4f6f9;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #0d1b2a;
+      color: white;
+      padding: 20px;
+      height: 100vh;
+      position: fixed;
+    }
+
+    .sidebar h2 {
+      color: #4ea8de;
+      margin-bottom: 20px;
+    }
+
+    .nav-item {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    .nav-item:hover {
+      background: #1b263b;
+      transform: translateX(5px);
+    }
+
+    .nav-item.active {
+      background: #4ea8de;
+      color: black;
+      font-weight: bold;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px;
+      padding: 25px;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+
+    <a href="/" class="nav-item {% if active=='home' %}active{% endif %}">Home</a>
+    <a href="/books" class="nav-item {% if active=='books' %}active{% endif %}">Books</a>
+    <a href="/customers" class="nav-item {% if active=='customers' %}active{% endif %}">Customers</a>
+    <a href="/orders" class="nav-item {% if active=='orders' %}active{% endif %}">Orders</a>
+    <a href="/analytics" class="nav-item {% if active=='analytics' %}active{% endif %}">Analytics</a>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="main">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Books Page</title>
+
+  <style>
+
+    body {
+      display: flex;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #0d1b2a;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar h2 {
+      color: #4ea8de;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+    }
+
+    .sidebar a:hover {
+      background: #1b263b;
+    }
+
+    /* MAIN */
+    .container {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    /* TOP BAR */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    select,
+    .search-box input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    select {
+      width: 160px;
+    }
+
+    .search-box input {
+      width: 250px;
+    }
+
+    .add-btn {
+      padding: 10px 15px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* TABLE */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+
+    /* ACTION */
+    .action-cell {
+      white-space: nowrap;
+    }
+
+    .edit-btn,
+    .delete-btn {
+      padding: 6px 10px;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    .edit-btn {
+      background: orange;
+    }
+
+    .delete-btn {
+      background: red;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <h2>📚 BOOKNEST</h2>
+
+    <a href="/dashboard">Home</a>
+    <a href="/books">Books</a>
+    <a href="/customers">Customers</a>
+    <a href="/orders">Orders</a>
+    <a href="/analytics">Analytics</a>
+
+  </div>
+
+
+  <!-- MAIN -->
+  <div class="container">
+
+    <h1>📚 Books Management</h1>
+
+
+    <!-- SEARCH + ADD -->
+    <div class="top-bar">
+
+      <div class="search-box">
+
+        <select id="searchColumn">
+
+          <option value="0">Book ID</option>
+          <option value="1">Title</option>
+          <option value="2">Author</option>
+          <option value="3">Genre</option>
+          <option value="4">Published Year</option>
+          <option value="5">Price</option>
+          <option value="6">Stock</option>
+
+        </select>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search..."
+        >
+
+      </div>
+
+
+      <button class="add-btn" onclick="openForm()">
+        + Add Book
+      </button>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>Book_ID</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Genre</th>
+          <th>Published Year</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Action</th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody id="bookTable">
+
+        {% for book in books %}
+
+        <tr>
+
+          <td>{{ book.id }}</td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.genre }}</td>
+          <td>{{ book.published_year }}</td>
+          <td>{{ book.price }}</td>
+          <td>{{ book.stock }}</td>
+
+          <td class="action-cell">
+
+            <button class="edit-btn"
+              onclick="editBook(
+                '{{ book.id }}',
+                '{{ book.title }}',
+                '{{ book.author }}',
+                '{{ book.genre }}',
+                '{{ book.published_year }}',
+                '{{ book.price }}',
+                '{{ book.stock }}'
+              )">
+              Edit
+            </button>
+
+            <button class="delete-btn"
+              onclick="deleteBook('{{ book.id }}')">
+              Delete
+            </button>
+
+          </td>
+
+        </tr>
+
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- ADD BOOK POPUP -->
+  <div
+    id="bookForm"
+    style="display:none; position:fixed; top:20%; left:40%; background:white; padding:20px; box-shadow:0 0 10px gray;"
+  >
+
+    <h3>Add Book</h3>
+
+    <input id="title" placeholder="Title"><br><br>
+
+    <input id="author" placeholder="Author"><br><br>
+
+    <input id="genre" placeholder="Genre"><br><br>
+
+    <input id="published_year" placeholder="Published Year"><br><br>
+
+    <input id="price" placeholder="Price"><br><br>
+
+    <input id="stock" placeholder="Stock"><br><br>
+
+    <button onclick="addBook()">Save</button>
+
+    <button onclick="closeForm()">Close</button>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+  <script>
+
+    // SEARCH
+    document.getElementById("searchInput")
+    .addEventListener("keyup", function () {
+
+      let value =
+        this.value.toLowerCase();
+
+      let column =
+        document.getElementById("searchColumn").value;
+
+      let rows =
+        document.querySelectorAll("#bookTable tr");
+
+      rows.forEach(function(row) {
+
+        let cellText =
+          row.children[column].textContent.toLowerCase();
+
+        if (value === "") {
+
+          row.style.display = "";
+
+        }
+        else if (cellText === value) {
+
+          row.style.display = "";
+
+        }
+        else {
+
+          row.style.display = "none";
+
+        }
+
+      });
+
+    });
+
+
+    // OPEN FORM
+    function openForm() {
+      document.getElementById("bookForm").style.display = "block";
+    }
+
+
+    // CLOSE FORM
+    function closeForm() {
+      document.getElementById("bookForm").style.display = "none";
+    }
+
+
+    // ADD BOOK
+    function addBook() {
+
+      let data = {
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value,
+        genre: document.getElementById("genre").value,
+        published_year: document.getElementById("published_year").value,
+        price: document.getElementById("price").value,
+        stock: document.getElementById("stock").value
+      };
+
+      fetch("/add_book", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        location.reload();
+      });
+
+    }
+
+
+    // EDIT BOOK
+    function editBook(
+      bookId,
+      title,
+      author,
+      genre,
+      publishedYear,
+      price,
+      stock
+    ) {
+
+      let newTitle = prompt("Enter title:", title);
+      let newAuthor = prompt("Enter author:", author);
+      let newGenre = prompt("Enter genre:", genre);
+      let newYear = prompt("Enter published year:", publishedYear);
+      let newPrice = prompt("Enter price:", price);
+      let newStock = prompt("Enter stock:", stock);
+
+      fetch("/edit_book/" + bookId, {
+
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          title: newTitle,
+          author: newAuthor,
+          genre: newGenre,
+          published_year: newYear,
+          price: newPrice,
+          stock: newStock
+        })
+
+      })
+      .then(response => response.json())
+      .then(data => {
+        location.reload();
+      });
+
+    }
+
+
+    // DELETE BOOK
+    function deleteBook(bookId) {
+
+      if (confirm("Are you sure?")) {
+
+        fetch("/delete_book/" + bookId, {
+          method: "DELETE"
+        })
+        .then(response => response.json())
+        .then(data => {
+          location.reload();
+        });
+
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>

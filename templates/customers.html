@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Customers Page</title>
+
+  <style>
+    body {
+      display: flex;
+      margin: 0;
+      font-family: Arial;
+      background: #f4f6f9;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      height: 100vh;
+      background: #0d1b2a;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar h2 {
+      color: #4ea8de;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+    }
+
+    .sidebar a:hover {
+      background: #1b263b;
+    }
+
+    /* Main Content */
+    .container {
+      margin-left: 240px;
+      width: calc(100% - 240px);
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    /* Search + Button */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-box select,
+    .search-box input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .search-box input {
+      width: 250px;
+    }
+
+    .add-btn {
+      padding: 10px 15px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background: #007bff;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f1f1f1;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <h2>📚 BOOKNEST</h2>
+
+    <a href="/dashboard">Home</a>
+    <a href="/books">Books</a>
+    <a href="/customers">Customers</a>
+    <a href="/orders">Orders</a>
+    <a href="/analytics">Analytics</a>
+
+  </div>
+
+  <!-- Main -->
+  <div class="container">
+
+    <h1>👤 Customers Management</h1>
+
+    <!-- Search + Add -->
+    <div class="top-bar">
+
+      <div class="search-box">
+
+        <select id="searchType">
+          <option value="0">Customer ID</option>
+          <option value="1">Name</option>
+          <option value="2">Email</option>
+          <option value="3">Phone</option>
+          <option value="4">City</option>
+          <option value="5">Country</option>
+        </select>
+
+        <input type="text" id="searchInput" placeholder="Search...">
+
+      </div>
+
+      <button class="add-btn" onclick="openCustomerForm()">
+        + Add Customer
+      </button>
+
+    </div>
+
+    <!-- Table -->
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>Customer_ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>City</th>
+          <th>Country</th>
+        </tr>
+
+      </thead>
+
+      <tbody id="customerTable">
+
+        {% for customer in customers %}
+        <tr>
+
+          <td>{{ customer.id }}</td>
+          <td>{{ customer.name }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.phone }}</td>
+          <td>{{ customer.city }}</td>
+          <td>{{ customer.country }}</td>
+
+        </tr>
+        {% endfor %}
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- Add Customer Popup -->
+  <div id="customerForm"
+    style="display:none; position:fixed; top:20%; left:40%;
+    background:white; padding:20px; border-radius:10px;
+    box-shadow:0 0 10px gray;">
+
+    <h3>Add Customer</h3>
+
+    <input id="name" placeholder="Name"><br><br>
+
+    <input id="email" placeholder="Email"><br><br>
+
+    <input id="phone" placeholder="Phone"><br><br>
+
+    <input id="city" placeholder="City"><br><br>
+
+    <input id="country" placeholder="Country"><br><br>
+
+    <button onclick="addCustomer()">Save</button>
+
+    <button onclick="closeCustomerForm()">Close</button>
+
+  </div>
+
+
+  <script>
+
+  // SEARCH 
+  document.getElementById("searchInput").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase().trim();
+    let column = document.getElementById("searchType").value;
+    let rows = document.querySelectorAll("#customerTable tr");
+
+    rows.forEach(function (row) {
+
+        let cells = row.querySelectorAll("td");
+        if (!cells.length) return;
+
+        let cellText = cells[column].textContent.toLowerCase().trim();
+
+    // IF SEARCH IS EMPTY → SHOW ALL
+        if (value === "") {
+        row.style.display = "";
+        return;
+        }
+
+    //  SPECIAL CASE: CUSTOMER ID
+        if (column === "0") {
+        if (cellText === value) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+        }
+
+    //  ALL OTHER COLUMNS (PARTIAL MATCH)
+        else {
+        if (cellText.includes(value)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+        }
+
+    });
+
+  });
+
+
+  // OPEN POPUP
+  function openCustomerForm() {
+    document.getElementById("customerForm").style.display = "block";
+  }
+
+  // CLOSE POPUP
+  function closeCustomerForm() {
+    document.getElementById("customerForm").style.display = "none";
+  }
+
+
+  // ADD CUSTOMER 
+  function addCustomer() {
+
+    let data = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      city: document.getElementById("city").value,
+      country: document.getElementById("country").value
+    };
+
+    fetch("/add_customer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+
+      if (result.status === "success") {
+        alert("Customer added successfully!");
+        location.reload();
+      } else {
+        alert("Failed to add customer");
+      }
+
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Server error");
+    });
+
+  }
+
+</script>
+
+</body>
+
+</html>

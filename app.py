@@ -289,27 +289,71 @@ def analytics():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT COALESCE(SUM(total_amount),0) FROM orders")
-    revenue = float(cur.fetchone()[0] or 0)
+    # Summary stats
+    cur.execute("""
+        SELECT 
+            COUNT(*),
+            COALESCE(SUM(total_amount),0),
+            COALESCE(AVG(total_amount),0)
+        FROM orders
+    """)
+    stats = cur.fetchone()
 
-    cur.execute("SELECT COUNT(*) FROM books")
-    total_books = cur.fetchone()[0]
+    # Monthly sales
+    cur.execute("""
+        SELECT 
+            TO_CHAR(order_date, 'Mon') as month,
+            SUM(total_amount)
+        FROM orders
+        GROUP BY month
+        ORDER BY MIN(order_date)
+    """)
+    monthly_sales = [
+        {"month": row[0], "sales": float(row[1])}
+        for row in cur.fetchall()
+    ]
 
-    cur.execute("SELECT COUNT(*) FROM customers")
-    total_customers = cur.fetchone()[0]
+    # Top books
+    cur.execute("""
+        SELECT b.title, COUNT(*)
+        FROM orders o
+        JOIN books b ON o.book_id = b.book_id
+        GROUP BY b.title
+        ORDER BY COUNT(*) DESC
+        LIMIT 5
+    """)
+    top_books = cur.fetchall()
 
-    cur.execute("SELECT COUNT(*) FROM orders")
-    total_orders = cur.fetchone()[0]
+    # Top customers
+    cur.execute("""
+        SELECT c.name, COUNT(*)
+        FROM orders o
+        JOIN customers c ON o.customer_id = c.customer_id
+        GROUP BY c.name
+        ORDER BY COUNT(*) DESC
+        LIMIT 5
+    """)
+    top_customers = cur.fetchall()
+
+    # Genre distribution
+    cur.execute("""
+        SELECT b.genre, COUNT(*)
+        FROM orders o
+        JOIN books b ON o.book_id = b.book_id
+        GROUP BY b.genre
+    """)
+    genre_data = cur.fetchall()
 
     cur.close()
     conn.close()
 
     return render_template(
         "analytics.html",
-        revenue=revenue,
-        total_books=total_books,
-        total_customers=total_customers,
-        total_orders=total_orders
+        stats=stats,
+        monthly_sales=monthly_sales,
+        top_books=top_books,
+        top_customers=top_customers,
+        genre_data=genre_data
     )
 
 @app.route('/add_order', methods=['POST'])

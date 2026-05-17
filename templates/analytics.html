@@ -141,20 +141,7 @@
   <h1>📈 Analytics Dashboard</h1>
 
   <!-- FILTER-->
-  <form method="GET" action="/analytics">
-    <select name="year">
-        <option value="">All Years</option>
-
-        {% for y in years %}
-            <option value="{{ y }}" {% if selected_year and selected_year|int == y %}selected{% endif %}>
-            {{ y }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <button type="submit">Filter</button>
-  </form>
-
+  
   <!-- Cards -->
   <div class="grid">
 
@@ -203,19 +190,19 @@
 
 <!-- JSON DATA  -->
 <script id="sales-data" type="application/json">
-  {{ monthly_sales | tojson }}
+  {{ [] | tojson }}
 </script>
 
 <script id="books-data" type="application/json">
-  {{ top_books | tojson }}
+  {{ [] | tojson }}
 </script>
 
 <script id="customers-data" type="application/json">
-  {{ top_customers | tojson }}
+  {{ [] | tojson }}
 </script>
 
 <script id="genre-data" type="application/json">
-  {{ genre_data | tojson }}
+  {{ [] | tojson }}
 </script>
 
 <!-- Chart Script -->

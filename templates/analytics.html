@@ -142,6 +142,28 @@
 
   <!-- FILTER-->
   
+  <form method="GET" action="/analytics" style="margin-bottom:20px;">
+
+  <select name="year">
+
+    <option value="">All Years</option>
+
+    {% for y in years %}
+      <option value="{{ y }}"
+        {% if selected_year and selected_year|int == y %}
+          selected
+        {% endif %}
+      >
+        {{ y }}
+      </option>
+    {% endfor %}
+
+  </select>
+
+  <button type="submit">Filter</button>
+
+</form>
+
   <!-- Cards -->
   <div class="grid">
 

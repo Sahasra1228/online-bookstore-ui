@@ -1,19 +1,21 @@
 # 📚 Online Bookstore Management System
+A full-stack web application for managing bookstore operations with real-time analytics and secure admin control.
 
 ##  Project Overview
-This is a full-stack web application for managing an online bookstore.  
-It allows an admin to manage books, customers, and orders efficiently using CRUD operations.
+A full-stack web application designed to manage online bookstore operations efficiently.
+The system supports admin authentication, inventory management, customer tracking, and order processing with real-time database updates and analytics support.
 
 ---
 
 ##  Features
-- Admin Login System
-- Add / Edit / Delete Books
-- Manage Customers
-- Manage Orders
-- Search & Filter functionality
-- Real-time database updates
-- Relational database with foreign key constraints
+- 🔐 Secure Admin Authentication System  
+- 📚 Complete CRUD operations for Books  
+- 👥 Customer Management System  
+- 🛒 Order Processing and Tracking  
+- 🔍 Search & Filter functionality for easy navigation  
+- 📊 Real-time database updates  
+- 🔗 Relational database with foreign key constraints  
+- 📈 Dashboard-ready data structure for analytics
 
 ---
 
@@ -21,7 +23,8 @@ It allows an admin to manage books, customers, and orders efficiently using CRUD
 - Frontend: HTML, CSS, JavaScript
 - Backend: Python (Flask)
 - Database: PostgreSQL
-- Tools: REST APIs, AJAX (Fetch)
+- APIs: REST APIs, AJAX (Fetch)
+- Tools: GitHub, VS Code
 
 ---
 
@@ -35,7 +38,5 @@ Password: admin123
 
 ---
 
-## 📂 How to Run
-1. Install requirements: pip install -r requirements.txt  
-2. Run app: python app.py  
-3. Open browser: http://127.0.0.1:5001
+## 🌐 Live Demo
+Access the deployed application here: https://online-bookstore-ui.onrender.com

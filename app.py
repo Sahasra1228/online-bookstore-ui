@@ -218,12 +218,30 @@ def delete_book(book_id):
     conn = get_db_connection()
     cur = conn.cursor()
 
+    # check if book exists in orders
+    cur.execute(
+        "SELECT COUNT(*) FROM orders WHERE book_id=%s",
+        (book_id,)
+    )
+
+    count = cur.fetchone()[0]
+
+    if count > 0:
+        cur.close()
+        conn.close()
+
+        return jsonify({
+            "status": "error",
+            "message": "Book already used in orders. Cannot delete."
+        })
+
     cur.execute(
         "DELETE FROM books WHERE book_id=%s",
         (book_id,)
     )
 
     conn.commit()
+
     cur.close()
     conn.close()
 

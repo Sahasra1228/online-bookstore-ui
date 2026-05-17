@@ -8,11 +8,13 @@
 <body>
 
     <!-- Flash popup -->
-    {% if message %}
-        <div id="popupMessage" class="login-popup">
-            ✅ {{ message }}
-        </div>
-    {% endif %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div id="popupMessage" class="login-popup">
+                ✅ {{ messages[0] }}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <!-- Sidebar -->
     <div class="sidebar">

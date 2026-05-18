@@ -376,12 +376,18 @@ def analytics():
 
     # Filter condition
     where_clause = ""
+    where_clause_join = ""
     params = []
 
     if selected_year:
         where_clause = """
             WHERE EXTRACT(YEAR FROM order_date) = %s
         """
+
+        where_clause_join = """
+            WHERE EXTRACT(YEAR FROM o.order_date) = %s
+        """
+
         params.append(selected_year)
 
     # Dashboard cards
@@ -416,36 +422,39 @@ def analytics():
         })
 
     # Top books
-    cur.execute("""
+    cur.execute(f"""
         SELECT b.title, SUM(o.quantity) AS total
         FROM orders o
         JOIN books b ON o.book_id = b.book_id
+        {where_clause_join}
         GROUP BY b.title
         ORDER BY total DESC
         LIMIT 5
-    """)
+    """, params)
 
     top_books = cur.fetchall()
 
     # Top customers
-    cur.execute("""
+    cur.execute(f"""
         SELECT c.name, SUM(o.total_amount) AS spent
         FROM orders o
         JOIN customers c ON o.customer_id = c.customer_id
+        {where_clause_join}
         GROUP BY c.name
         ORDER BY spent DESC
         LIMIT 5
-    """)
+    """, params)
 
     top_customers = cur.fetchall()
 
     # Genre distribution
-    cur.execute("""
+    cur.execute(f"""
         SELECT b.genre, COUNT(*) AS total
         FROM orders o
         JOIN books b ON o.book_id = b.book_id
+        {where_clause_join}
         GROUP BY b.genre
-    """)
+    """, params)
 
     genre_data = cur.fetchall()
 
